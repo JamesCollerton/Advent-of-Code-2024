@@ -4,8 +4,13 @@
 int main() {
 
     auto io = IO();
-    auto lines = io.readFile("filename");
-    io.writeFile(std::vector<std::string>());
+    auto lines = io.readFile("./io/day-1/input.txt");
+
+    for(auto line: lines) {
+        std::cout << line << std::endl;
+    }
+
+    io.writeFile("./io/day-1/output.txt", lines);
 
     return 0;
 }
