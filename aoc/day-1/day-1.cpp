@@ -1,9 +1,11 @@
 #include <iostream>
-#include "io/io.h"
+#include "../io/io.h"
 
 int main() {
 
-    std::cout << "Hello, world" << std::endl;
+    auto io = IO();
+    auto lines = io.readFile("filename");
+    io.writeFile(std::vector<std::string>());
 
     return 0;
 }

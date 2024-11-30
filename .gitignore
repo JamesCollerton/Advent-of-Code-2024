@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+bazel*
+aoc/bazel*
+MODULE.bazel.lock
