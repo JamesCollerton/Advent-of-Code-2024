@@ -22,8 +22,8 @@ VectorPair convertLinesToVectorPair(vector<string> lines) {
 
         istringstream buffer(s);
 
-        streamiter some_istream = istream_iterator<string>(buffer);
-        for (streamiter it = streamiter(some_istream); it != streamiter(); it++) {
+        streamiter istream = istream_iterator<string>(buffer);
+        for (streamiter it = streamiter(istream); it != streamiter(); it++) {
             if(flag) {
                 v1.push_back(stoi(*it));
             } else {
@@ -42,18 +42,20 @@ VectorPair convertLinesToVectorPair(vector<string> lines) {
 
 int main() {
 
-    auto io = IO();
-    auto lines = io.readFile("./io/day-1/real-input.txt");
+    const auto io = IO();
+    const auto lines = io.readFile("./io/day-1/test-input.txt");
 
-    auto vector_pair = convertLinesToVectorPair(lines);
+    const auto vector_pair = convertLinesToVectorPair(lines);
+    auto v1 = move(vector_pair.v1);
+    auto v2 = move(vector_pair.v2);
 
-    sort(vector_pair.v1.begin(), vector_pair.v1.end());
-    sort(vector_pair.v2.begin(), vector_pair.v2.end()) ;
+    sort(v1.begin(), v1.end());
+    sort(v2.begin(), v2.end()) ;
 
     int total = 0;
 
-    for(int i = 0; i < vector_pair.v1.size(); i++) {
-        total += abs(vector_pair.v1[i] - vector_pair.v2[i]);
+    for(int i = 0; i < v1.size(); i++) {
+        total += abs(v1[i] - v2[i]);
     }
 
     cout << total << endl;
