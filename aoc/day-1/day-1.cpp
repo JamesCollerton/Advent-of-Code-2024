@@ -43,11 +43,7 @@ VectorPair convertLinesToVectorPair(vector<string> lines) {
 int main() {
 
     auto io = IO();
-    auto lines = io.readFile("./io/day-1/input.txt");
-
-    // for(auto line: lines) {
-    //     cout << line << endl;
-    // }
+    auto lines = io.readFile("./io/day-1/real-input.txt");
 
     auto vector_pair = convertLinesToVectorPair(lines);
 
@@ -61,18 +57,6 @@ int main() {
     }
 
     cout << total << endl;
-
-    // cout << "v1" << endl;
-    // for(auto line: vector_pair.v1) {
-    //     cout << line << endl;
-    // }
-
-    // cout << "v2" << endl;
-    // for(auto line: vector_pair.v2) {
-    //     cout << line << endl;
-    // }
-
-    // io.writeFile("./io/day-1/output.txt", lines);
 
     return 0;
 }
