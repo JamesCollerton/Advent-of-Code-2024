@@ -2,61 +2,36 @@
 #include <sstream>
 #include "../io/io.h"
 
+using namespace std;
+
+typedef istream_iterator<string> streamiter;
+
 struct VectorPair {
-    std::vector<int> v1;
-    std::vector<int> v2;
+    vector<int> v1;
+    vector<int> v2;
 };
 
-VectorPair convertLinesToVectorPair(std::vector<std::string> lines) {
+VectorPair convertLinesToVectorPair(vector<string> lines) {
 
-    std::vector<int> v1;
-    std::vector<int> v2;
+    vector<int> v1;
+    vector<int> v2;
 
-    for (std::string s : lines) {
-        
-        std::stringstream ss(s);
-        std::string num_string;
+    for (string s : lines) {
 
         bool flag = true;
 
-        std::istringstream buffer(s);
-        std::vector<std::string> ret;
+        istringstream buffer(s);
 
-        // std::copy(
-        //     std::istream_iterator<std::string>(buffer), 
-        //     std::istream_iterator<std::string>(),
-        //     std::back_inserter(ret)
-        // );
-
-        typedef std::istream_iterator<std::string> streamiter;
-
-        streamiter some_istream = std::istream_iterator<std::string>(buffer);
+        streamiter some_istream = istream_iterator<string>(buffer);
         for (streamiter it = streamiter(some_istream); it != streamiter(); it++) {
-            // process words
-            // if(flag) {
-            //     v1.push_back(std::stoi(num_string));
-            // } else {
-            //     v2.push_back(std::stoi(num_string));
-            // }
+            if(flag) {
+                v1.push_back(stoi(*it));
+            } else {
+                v2.push_back(stoi(*it));
+            }
 
-            // flag = !flag;
+            flag = !flag;
         }
-
-        // for(auto str: ret) {
-        //     std::cout << str << std::endl;
-        // }
-        
-        // while (std::getline(ss, num_string, '\t')) {
-      
-        //     // std::cout << num_string << std::endl;
-        //     if(flag) {
-        //         v1.push_back(std::stoi(num_string));
-        //     } else {
-        //         v2.push_back(std::stoi(num_string));
-        //     }
-
-        //     flag = !flag;
-        // }
     }
 
     return {
@@ -70,23 +45,34 @@ int main() {
     auto io = IO();
     auto lines = io.readFile("./io/day-1/input.txt");
 
-    for(auto line: lines) {
-        std::cout << line << std::endl;
-    }
+    // for(auto line: lines) {
+    //     cout << line << endl;
+    // }
 
     auto vector_pair = convertLinesToVectorPair(lines);
 
-    std::cout << "v1" << std::endl;
-    for(auto line: vector_pair.v1) {
-        std::cout << line << std::endl;
+    sort(vector_pair.v1.begin(), vector_pair.v1.end());
+    sort(vector_pair.v2.begin(), vector_pair.v2.end()) ;
+
+    int total = 0;
+
+    for(int i = 0; i < vector_pair.v1.size(); i++) {
+        total += abs(vector_pair.v1[i] - vector_pair.v2[i]);
     }
 
-    std::cout << "v2" << std::endl;
-    for(auto line: vector_pair.v2) {
-        std::cout << line << std::endl;
-    }
+    cout << total << endl;
 
-    io.writeFile("./io/day-1/output.txt", lines);
+    // cout << "v1" << endl;
+    // for(auto line: vector_pair.v1) {
+    //     cout << line << endl;
+    // }
+
+    // cout << "v2" << endl;
+    // for(auto line: vector_pair.v2) {
+    //     cout << line << endl;
+    // }
+
+    // io.writeFile("./io/day-1/output.txt", lines);
 
     return 0;
 }
