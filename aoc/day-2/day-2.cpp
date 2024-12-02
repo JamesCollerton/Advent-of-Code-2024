@@ -67,31 +67,31 @@ void partTwo() {
 
     for (string s : lines) {
 
-        bool is_safe = false;
+        bool can_be_safe = false;
         string temp_s;
-        stringstream ss(s);
-        vector<string> v;
+        stringstream string_stream(s);
+        vector<string> num_vec;
 
-        while(getline(ss, temp_s, ' ')) {
-            v.push_back(temp_s);
+        while(getline(string_stream, temp_s, ' ')) {
+            num_vec.push_back(temp_s);
         }
 
-        for(int i = 0; i < v.size(); i++) {
+        for(int i = 0; i < num_vec.size(); i++) {
 
             string new_s = "";
 
-            for(int j = 0; j < v.size(); j++) {
+            for(int j = 0; j < num_vec.size(); j++) {
                 if(i != j) {
-                    new_s += " " + v[j];
+                    new_s += " " + num_vec[j];
                 }
             }
 
             if(isReportSafe(new_s)) {
-                is_safe = true;
+                can_be_safe = true;
             }
         }
 
-        if(is_safe || isReportSafe(s)) {
+        if(can_be_safe || isReportSafe(s)) {
             total++;
         }
     }
