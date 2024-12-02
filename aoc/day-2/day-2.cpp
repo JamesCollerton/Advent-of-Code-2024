@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+// #include <bits/stdc++.h>
 #include "../io/io.h"
 
 using namespace std;
@@ -67,17 +68,26 @@ void partTwo() {
     for (string s : lines) {
 
         bool is_safe = false;
+        string temp_s;
+        stringstream ss(s);
+        vector<string> v;
 
-        for(int i = 0; i < s.length(); i++) {
-            if(s[i] != ' ') {
-                auto sc = string(s);
-                sc.erase(sc.begin() + i);
+        while(getline(ss, temp_s, ' ')) {
+            v.push_back(temp_s);
+        }
 
-                // cout << sc << endl;
+        for(int i = 0; i < v.size(); i++) {
 
-                if(isReportSafe(sc)) {
-                    is_safe = true;
+            string new_s = "";
+
+            for(int j = 0; j < v.size(); j++) {
+                if(i != j) {
+                    new_s += " " + v[j];
                 }
+            }
+
+            if(isReportSafe(new_s)) {
+                is_safe = true;
             }
         }
 
