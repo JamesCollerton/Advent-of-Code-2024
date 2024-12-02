@@ -11,31 +11,29 @@ bool isReportSafe(std::string report) {
     istringstream buffer(report);
     streamiter istream = istream_iterator<string>(buffer);
 
-    int prev = -1;
     bool increasing = true;
 
-    // Decide if increasing/ decreasing
-    // Check absolute difference
+    streamiter it = streamiter(istream);
+    auto firstNum = stoi(*it++);
+    auto secondNum = stoi(*it);
 
-    for (streamiter it = streamiter(istream); it != streamiter(); it++) {
+    if(firstNum < secondNum) {
+        increasing = true;
+    } else if(firstNum > secondNum) {
+        increasing = false;
+    } else {
+        return false;
+    }
+
+    int prev = firstNum;
+
+    for (it; it != streamiter(); it++) {
         auto num = stoi(*it);
-        // For first item, check the next one to see if it's greater or smaller
-        if(prev == -1) {
-            prev = num;
-            auto nextNum = stoi(*next(it, 1));
-            if(num < nextNum) {
-                increasing = false;
-            } else if(num > nextNum) {
-                increasing = true;
-            } else {
-                return false;
-            }
-        // Otherwise check 
-        } else {
-            if((num < prev && increasing) || (num > prev && !increasing) || num == prev) {
-                return false;
-            }
+
+        if((num < prev && increasing) || (num > prev && !increasing) || num == prev || (abs(num - prev) > 3)) {
+            return false;
         }
+
         prev = num;
     }
 
@@ -45,7 +43,7 @@ bool isReportSafe(std::string report) {
 int main() {
 
     const auto io = IO();
-    const auto lines = io.readFile("./io/day-2/test-input.txt");
+    const auto lines = io.readFile("./io/day-2/real-input.txt");
 
     auto total = 0;
 

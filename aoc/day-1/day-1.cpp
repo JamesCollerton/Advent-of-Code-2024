@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <map>
 #include "../io/io.h"
 
 using namespace std;
@@ -40,7 +41,7 @@ VectorPair convertLinesToVectorPair(vector<string> lines) {
     };
 }
 
-int main() {
+void partOne() {
 
     const auto io = IO();
     const auto lines = io.readFile("./io/day-1/test-input.txt");
@@ -58,7 +59,43 @@ int main() {
         total += abs(v1[i] - v2[i]);
     }
 
-    cout << total << endl;
+    cout << "Part one: " << total << endl;
+
+}
+
+void partTwo() {
+
+    const auto io = IO();
+    const auto lines = io.readFile("./io/day-1/real-input.txt");
+
+    const auto vector_pair = convertLinesToVectorPair(lines);
+    auto v1 = move(vector_pair.v1);
+    auto v2 = move(vector_pair.v2);
+
+    map<int, int> num_count_map;
+
+    for(int i = 0; i < v2.size(); i++) {
+        auto num = v2[i];
+        num_count_map[num] = num_count_map[num] + num; 
+    }
+
+    auto total = 0;
+
+    for(int i = 0; i < v1.size(); i++) {
+        auto num = v1[i];
+        if(num_count_map.count(num) > 0) {
+            total += num_count_map[num];
+        }
+    }
+
+    cout << "Part two: " << total << endl;
+
+}
+
+int main() {
+
+    partOne();
+    partTwo();
 
     return 0;
 }
