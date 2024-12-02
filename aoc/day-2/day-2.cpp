@@ -40,7 +40,7 @@ bool isReportSafe(std::string report) {
     return true;
 }
 
-int main() {
+void partOne() {
 
     const auto io = IO();
     const auto lines = io.readFile("./io/day-2/real-input.txt");
@@ -53,7 +53,47 @@ int main() {
         }
     }
 
-    cout << total << endl;
+    cout << "Part one: " << total << endl;
+
+}
+
+void partTwo() {
+
+    const auto io = IO();
+    const auto lines = io.readFile("./io/day-2/real-input.txt");
+
+    auto total = 0;
+
+    for (string s : lines) {
+
+        bool is_safe = false;
+
+        for(int i = 0; i < s.length(); i++) {
+            if(s[i] != ' ') {
+                auto sc = string(s);
+                sc.erase(sc.begin() + i);
+
+                // cout << sc << endl;
+
+                if(isReportSafe(sc)) {
+                    is_safe = true;
+                }
+            }
+        }
+
+        if(is_safe || isReportSafe(s)) {
+            total++;
+        }
+    }
+
+    cout << "Part two: " << total << endl;
+
+}
+
+int main() {
+
+    partOne();
+    partTwo();
 
     return 0;
 }
