@@ -1,5 +1,7 @@
 #include <iostream>
 #include <sstream>
+#include <regex>
+#include <map>
 #include "../io/io.h"
 
 using namespace std;
@@ -17,6 +19,7 @@ void partOne() {
     int total = 0;
 
     auto mul_location = input.find("mul");
+
     while(mul_location != string::npos) {
         if(input[mul_location + 3] == '(') {
             
@@ -25,16 +28,13 @@ void partOne() {
             if(cb_location != string::npos) {
 
                 auto substr = std::string(&input[mul_location + 4], &input[cb_location]);
-                auto left = substr.substr(0, substr.find(','));
-                auto right = substr.substr(substr.find(',') + 1);
+                if(substr.find(',') != string::npos) {
+                    auto left = substr.substr(0, substr.find(','));
+                    auto right = substr.substr(substr.find(',') + 1);
 
-                // cout << "Substr: " << substr << endl;
-
-                if(is_number(left) && is_number(right)) {
-                    total += stoi(left) * stoi(right);
-                    cout << "Left: " << left << endl;
-                    cout << "Right: " << right << endl;
-                    cout << "Total: " << total << endl;
+                    if(is_number(left) && is_number(right)) {
+                        total += stoi(left) * stoi(right);
+                    }
                 }
             }
             
@@ -49,11 +49,54 @@ void partOne() {
 void partTwo() {
 
     const auto io = IO();
-    const auto input = io.readFile("./io/day-3/test-input.txt")[0];
+    const auto input = io.readFile("./io/day-3/real-input.txt")[0];
 
-    // auto total = 0;
+    int total = 0;
 
-    cout << "Part two: " << input << endl;
+    auto mul_location = input.find("mul");
+    auto prev_mul_location = 0;
+
+    auto enabled = true;
+
+    while(mul_location != string::npos) {
+
+        auto ss = string(&input[prev_mul_location], &input[mul_location]);
+        auto do_l = ss.rfind("do()");
+        auto dont_l = ss.rfind("don't()");
+
+        if(do_l == string::npos && dont_l == string::npos) {
+            enabled = enabled;
+        } else if(do_l == string::npos) {
+            enabled = false;
+        } else if(dont_l == string::npos) {
+            enabled = true;
+        } else {
+            enabled = do_l >= dont_l;
+        }
+
+        if(enabled && input[mul_location + 3] == '(') {
+            
+            const auto cb_location = input.find(")", mul_location);
+
+            if(cb_location != string::npos) {
+
+                auto substr = std::string(&input[mul_location + 4], &input[cb_location]);
+                if(substr.find(',') != string::npos) {
+                    auto left = substr.substr(0, substr.find(','));
+                    auto right = substr.substr(substr.find(',') + 1);
+
+                    if(is_number(left) && is_number(right)) {
+                        total += stoi(left) * stoi(right);
+                    }
+                }
+            }
+            
+        }
+        prev_mul_location = mul_location;
+        mul_location = input.find("mul", mul_location + 1);
+    }
+
+    cout << "Part two: " << total << endl;
 
 }
 
