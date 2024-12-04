@@ -48,14 +48,31 @@ void partOne() {
 
 }
 
+auto two_total = 0;
+int two_num_lines;
+int two_num_letters;
+
 void partTwo() {
 
     const auto io = IO();
-    const auto input = io.readFile("./io/day-4/test-input.txt");
+    const auto input = io.readFile("./io/day-4/real-input.txt");
 
-    int total = 0;
+    two_num_lines = input.size();
+    two_num_letters = input[0].size();
 
-    cout << "Part two: " << total << endl;
+    for(int i = 1; i < two_num_lines - 1; i++) {
+        for(int j = 1; j < two_num_letters - 1; j++) {
+            if(input[i][j] == 'A') {
+                if((input[i - 1][j - 1] == 'M' && input[i + 1][j + 1] == 'S') || (input[i - 1][j - 1] == 'S' && input[i + 1][j + 1] == 'M')) {
+                    if((input[i - 1][j + 1] == 'M' && input[i + 1][j - 1] == 'S') || (input[i - 1][j + 1] == 'S' && input[i + 1][j - 1] == 'M')) {
+                        two_total++;
+                    }
+                }
+            }
+        }
+    }
+
+    cout << "Part two: " << two_total << endl;
 
 }
 
