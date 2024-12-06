@@ -79,18 +79,27 @@ ParsedInput parseInput(vector<string> input) {
     };
 }
 
-bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line) {
+bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line, bool print) {
+
+    bool result = true;
 
     for(int i = line.size() - 1; i > 0; i--) {
         set<int> banned_nums = key_to_afters_map[line[i]];
         for(int j = 0; j < i; j++) {
             if(banned_nums.count(line[j]) > 0) {
-                return false;
+                if(print) {
+                    cout << line[j] << " " << endl;
+                }
+                result = false;
             }
         }
     }
 
-    return true;
+    return result;
+}
+
+bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line) {
+    isLineValid(key_to_afters_map, line, false);
 }
 
 void partOne(ParsedInput parsed_input) {
@@ -130,6 +139,8 @@ vector<int> orderLine(map<int, set<int>> key_to_afters_map, vector<int> line) {
         num_to_position[line[i]] = i;
     }
 
+    // printMap(key_to_afters_map);
+
     int i = 0;
 
     for(auto it = key_to_afters_map.cbegin(); it != key_to_afters_map.cend(); ++it) {
@@ -146,7 +157,20 @@ vector<int> orderLine(map<int, set<int>> key_to_afters_map, vector<int> line) {
 
             // cout << "Current number: " << curr_num << " position: " << num_to_position[curr_num] << endl;
 
+            // printMap(num_to_position);
+
             for(auto swap_num = to_swap.cbegin(); swap_num != to_swap.cend(); ++swap_num) {
+
+                if(num_to_position.find(*swap_num) != num_to_position.end()) {
+
+                    cout << endl;
+                    printMap(num_to_position);
+
+                    printLine(reordered_line);
+                    cout << "Current number: " << curr_num << " position: " << num_to_position[curr_num] << endl;
+                    cout << "Number to swap: " << *swap_num << " position: " << num_to_position[*swap_num] << endl;
+                    cout << endl;
+                }
 
                 if(num_to_position.find(*swap_num) != num_to_position.end() && num_to_position[*swap_num] < num_to_position[curr_num]) {
 
@@ -156,11 +180,17 @@ vector<int> orderLine(map<int, set<int>> key_to_afters_map, vector<int> line) {
 
                     // printLine(reordered_line);
 
+                    // Move everything along 1
+
                     reordered_line.erase(reordered_line.begin() + num_to_position[curr_num] + 1);
 
                     // printLine(reordered_line);
                     
-                    num_to_position[*swap_num] = num_to_position[*swap_num] + 1;
+                    for(int i = num_to_position[*swap_num]; i < line.size(); i++) {
+                        num_to_position[line[i]] = num_to_position[line[i]] + 1;
+                    }
+
+                    // num_to_position[*swap_num] = num_to_position[*swap_num] + 1;
                     num_to_position[curr_num] = num_to_position[*swap_num] - 1;
                 }
             }
@@ -179,18 +209,24 @@ void partTwo(ParsedInput parsed_input) {
 
     int total = 0;
 
-    for(auto line: parsed_input.page_orders) {
+    vector<vector<int>> lines = {{26, 25, 89, 49, 58, 24, 37}};
+
+    // for(auto line: parsed_input.page_orders) {
+    for(auto line: lines) {
         if(!isLineValid(parsed_input.key_to_afters_map, line)) {
             auto ordered_line = orderLine(parsed_input.key_to_afters_map, line);
 
-            if(!isLineValid(parsed_input.key_to_afters_map, ordered_line)) {
+            if(!isLineValid(parsed_input.key_to_afters_map, ordered_line, true)) {
+                cout << "Invalid line" << endl;
                 printLine(line);
                 printLine(ordered_line);
+                cout << endl;
             }
 
             total += ordered_line[ordered_line.size() / 2];
         }
     }
+    // }
 
     cout << "Part two: " << total << endl;
 
@@ -204,7 +240,10 @@ int main() {
     ParsedInput parsed_input = parseInput(input);
 
     // partOne(parsed_input);
+    // printMap(parsed_input.key_to_afters_map);
     partTwo(parsed_input);
 
     return 0;
 }
+
+// 61 96 89 91 33
