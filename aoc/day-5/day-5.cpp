@@ -2,6 +2,8 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <vector>
+#include <algorithm>
 #include "../io/io.h"
 
 using namespace std;
@@ -79,28 +81,25 @@ ParsedInput parseInput(vector<string> input) {
     };
 }
 
-bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line, bool print) {
+bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line) {
 
-    bool result = true;
+// /    bool result = true;
 
     for(int i = line.size() - 1; i > 0; i--) {
         set<int> banned_nums = key_to_afters_map[line[i]];
         for(int j = 0; j < i; j++) {
             if(banned_nums.count(line[j]) > 0) {
-                if(print) {
-                    cout << line[j] << " " << endl;
-                }
-                result = false;
+                return false;
             }
         }
     }
 
-    return result;
+    return true;
 }
 
-bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line) {
-    isLineValid(key_to_afters_map, line, false);
-}
+// bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line) {
+//     isLineValid(key_to_afters_map, line, false);
+// }
 
 void partOne(ParsedInput parsed_input) {
 
@@ -130,103 +129,56 @@ void printMap(map<int, int> map) {
     }
 }
 
+void printSet(set<int> set) {
+    cout << "Set ";
+    for(auto it = set.cbegin(); it != set.cend(); ++it) {
+        cout << to_string(*it) << " ";
+    }
+    cout << endl;
+}
+
 vector<int> orderLine(map<int, set<int>> key_to_afters_map, vector<int> line) {
 
     vector<int> reordered_line = line;
-    map<int, int> num_to_position;
 
     for(int i = 0; i < line.size(); i++) {
-        num_to_position[line[i]] = i;
-    }
 
-    // printMap(key_to_afters_map);
+        auto item = line[i];
 
-    int i = 0;
+        if(key_to_afters_map.find(item) != key_to_afters_map.end()) {
 
-    for(auto it = key_to_afters_map.cbegin(); it != key_to_afters_map.cend(); ++it) {
+            set<int> afters = key_to_afters_map[item];
+            int item_idx = find(reordered_line.begin(), reordered_line.end(), item) - reordered_line.begin();
 
-        // cout << "Loop " << i << endl;
-        
-        // printLine(reordered_line);
-        // printMap(num_to_position);
-
-        auto curr_num = it->first;
-        auto to_swap = it->second;
-
-        if(num_to_position.find(curr_num) != num_to_position.end()) {
-
-            // cout << "Current number: " << curr_num << " position: " << num_to_position[curr_num] << endl;
-
-            // printMap(num_to_position);
-
-            for(auto swap_num = to_swap.cbegin(); swap_num != to_swap.cend(); ++swap_num) {
-
-                if(num_to_position.find(*swap_num) != num_to_position.end()) {
-
+            for(int i = 0; i < item_idx; i++) {
+                if(afters.find(reordered_line[i]) != afters.end()) {
+                    reordered_line.insert(reordered_line.begin() + i, item);
+                    reordered_line.erase(reordered_line.begin() + item_idx + 1);
                     cout << endl;
-                    printMap(num_to_position);
-
-                    printLine(reordered_line);
-                    cout << "Current number: " << curr_num << " position: " << num_to_position[curr_num] << endl;
-                    cout << "Number to swap: " << *swap_num << " position: " << num_to_position[*swap_num] << endl;
-                    cout << endl;
-                }
-
-                if(num_to_position.find(*swap_num) != num_to_position.end() && num_to_position[*swap_num] < num_to_position[curr_num]) {
-
-                    // cout << "Number to swap: " << *swap_num << " position: " << num_to_position[*swap_num] << endl;
-
-                    reordered_line.insert(reordered_line.begin() + num_to_position[*swap_num], curr_num);
-
-                    // printLine(reordered_line);
-
-                    // Move everything along 1
-
-                    reordered_line.erase(reordered_line.begin() + num_to_position[curr_num] + 1);
-
-                    // printLine(reordered_line);
-                    
-                    for(int i = num_to_position[*swap_num]; i < line.size(); i++) {
-                        num_to_position[line[i]] = num_to_position[line[i]] + 1;
-                    }
-
-                    // num_to_position[*swap_num] = num_to_position[*swap_num] + 1;
-                    num_to_position[curr_num] = num_to_position[*swap_num] - 1;
+                    break;
                 }
             }
 
         }
 
-        i++;
     }
 
     return reordered_line;
+
 }
 
 void partTwo(ParsedInput parsed_input) {
 
-    // printMap(parsed_input.key_to_afters_map);
-
     int total = 0;
 
-    vector<vector<int>> lines = {{26, 25, 89, 49, 58, 24, 37}};
-
-    // for(auto line: parsed_input.page_orders) {
-    for(auto line: lines) {
+    for(auto line: parsed_input.page_orders) {
         if(!isLineValid(parsed_input.key_to_afters_map, line)) {
             auto ordered_line = orderLine(parsed_input.key_to_afters_map, line);
-
-            if(!isLineValid(parsed_input.key_to_afters_map, ordered_line, true)) {
-                cout << "Invalid line" << endl;
-                printLine(line);
-                printLine(ordered_line);
-                cout << endl;
-            }
-
             total += ordered_line[ordered_line.size() / 2];
+        } else {
+            cout << "Valid line";
         }
     }
-    // }
 
     cout << "Part two: " << total << endl;
 
@@ -239,8 +191,7 @@ int main() {
 
     ParsedInput parsed_input = parseInput(input);
 
-    // partOne(parsed_input);
-    // printMap(parsed_input.key_to_afters_map);
+    partOne(parsed_input);
     partTwo(parsed_input);
 
     return 0;
