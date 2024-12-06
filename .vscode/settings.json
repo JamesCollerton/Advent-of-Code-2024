@@ -70,6 +70,7 @@
         "map": "cpp",
         "set": "cpp",
         "stack": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "filesystem": "cpp"
     }
 }
