@@ -100,64 +100,11 @@ void print(vector<string> input) {
     cout << endl;
 }
 
-void fill_up_directions(const Position &position, const vector<string> &input, vector<vector<set<Direction>>> &seen_directions) {
-
-    if(position.direction == UP || position.direction == DOWN) {
-        // Fill up
-        int v = position.v;
-        int h = position.h;
-
-        while(v >= 0 && v < seen_directions.size() && input[v][h] != '#') {
-            // cout << "Filling v: " << v << ", h: " << h << ", d: " << position.direction.name << endl;
-            seen_directions[v][h].insert(position.direction);
-            v++;
-        }
-
-        // Fill down
-        v = position.v;
-
-        while(v >= 0 && v < seen_directions.size() && input[v][h] != '#') {
-            // cout << "Filling v: " << v << ", h: " << h << ", d: " << position.direction.name << endl;
-            seen_directions[v][h].insert(position.direction);
-            v--;
-        }
-    } else {
-        // Fill left
-        int v = position.v;
-        int h = position.h;
-
-        while(h >= 0 && h < seen_directions[v].size() && input[v][h] != '#') {
-            // cout << "Filling v: " << v << ", h: " << h << ", d: " << position.direction.name << endl;
-            seen_directions[v][h].insert(position.direction);
-            h--;
-        }
-
-        // Fill right
-        h = position.h;
-
-        while(h >= 0 && h < seen_directions[v].size() && input[v][h] != '#') {
-            // cout << "Filling v: " << v << ", h: " << h << ", d: " << position.direction.name << endl;
-            seen_directions[v][h].insert(position.direction);
-            h++;
-        }
-    }
-
+bool valid_coords(int v, int h, const vector<string> &input) {
+    return v >= 0 && v < input.size() && h >= 0 && h < input[0].size();
 }
 
-int try_blocks(const vector<string> &input, const Position &position, const set<Direction> &poss_next_directions) {
-
-    // We can put a block if...
-    // (block_v >= 0 && block_v < input.size() && block_h >= 0 && block_h < input[0].size() && )
-    int block_v;
-
-}
-
-void part_two() {
-
-    const auto io = IO();
-    auto input = io.readFile("./io/day-6/real-input.txt");
-
-    auto total = 0;
+bool loop_exists(vector<string> &input) {
 
     // Find initial position and direction
     auto position = find_initial_position(input);
@@ -174,53 +121,74 @@ void part_two() {
         seen_directions.push_back(row);
     }
 
-    input[position.v][position.h] = 'X';
-
     // While in grid
-    while(position.v > 0 && position.v < input.size() && position.h > 0 && position.h < input[0].size()) {
-        
+    while(position.v >= 0 && position.v < input.size() && position.h >= 0 && position.h < input[0].size()) {
+
+        // Check to see if we've been on this square, and in this direction
+        auto seen_direction_set = seen_directions[position.v][position.h];
+
+        if(input[position.v][position.h] == 'X' && seen_direction_set.find(position.direction) != seen_direction_set.end()) {
+            return true;
+        }
+
+        // Mark this square as visited in this direction
+        input[position.v][position.h] = 'X';
+        seen_directions[position.v][position.h].insert(position.direction);
+
+        // Calculate new positions
         int new_v = position.v + position.direction.v;
         int new_h = position.h + position.direction.h;
+        
+        // If we're stepping off the board, then there's no loop
+        if(!(new_v >= 0 && new_v < input.size() && new_h >= 0 && new_h < input[0].size())) {
+            return false;
+        }
 
-        // If next move is blocked, we need to turn
+        // If next move is blocked we need to change direction
         if(input[new_v][new_h] == '#') {
             position.direction = *position.direction.next;
+
+        // Otherwise move forward
         } else {
-
-            // If we're on the block, make a note of the direction we were going in.
-            fill_up_directions(position, input, seen_directions);
-
-            set<Direction> poss_next_directions = seen_directions[position.v][position.h];
-
-            // Try putting blocks in every non-blocked square, and see
-            // if it gets us onto a good path.
-            total += try_blocks(input, position, poss_next_directions);
-
-            // If we're on a square where by turning right we can get onto a path where
-            // we can get into a loop, go for it
-            // if(poss_next_directions.find(*position.direction.next) != poss_next_directions.end()) {
-            //     total++;
-            // }
-
-            // If current block is not visited, mark this block as used
-            if(input[position.v][position.h] == '.') {
-                input[position.v][position.h] = 'X';
-            } 
-
-            // Move on
             position.v = new_v;
             position.h = new_h;
         }
     }
 
+    return false;
+}
+
+void part_two() {
+
+    const auto io = IO();
+    auto input = io.readFile("./io/day-6/real-input.txt");
+
+    auto total = 0;
+    auto i_start = 0;
+    auto j_start = 0;
+
+    int poss_cases = input.size() * input[0].size();
+    int counter = 0;
+
+    for(int i = i_start; i < input.size(); i++) {
+        for(int j = j_start; j < input[i].size(); j++) {
+            auto input_copy = input;
+            cout << "Total: " << counter++ << " out of " << poss_cases << endl;
+            if(input_copy[i][j] == '.') {
+                input_copy[i][j] = '#';
+                // print(input_copy);
+                if(loop_exists(input_copy)) {
+                    cout << "Total: " << total << ", i: " << i << ", j:" << j << endl;
+                    total++;
+                }
+            }
+        }
+    }
+
+
     cout << "Part two: " << total << endl;
 
 }
-
-// Expected:
-//      6, 4
-//      6, 6
-//      7, 6
 
 int main() {
 
