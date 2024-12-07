@@ -90,20 +90,6 @@ void part_one() {
 
 }
 
-void print(vector<string> input) {
-    for(int i = 0; i < input.size(); i++) {
-        for(int j = 0; j < input.size(); j++) {
-            cout << input[i][j];
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-bool valid_coords(int v, int h, const vector<string> &input) {
-    return v >= 0 && v < input.size() && h >= 0 && h < input[0].size();
-}
-
 bool loop_exists(vector<string> &input) {
 
     // Find initial position and direction
@@ -164,21 +150,13 @@ void part_two() {
     auto input = io.readFile("./io/day-6/real-input.txt");
 
     auto total = 0;
-    auto i_start = 0;
-    auto j_start = 0;
 
-    int poss_cases = input.size() * input[0].size();
-    int counter = 0;
-
-    for(int i = i_start; i < input.size(); i++) {
-        for(int j = j_start; j < input[i].size(); j++) {
+    for(int i = 0; i < input.size(); i++) {
+        for(int j = 0; j < input[i].size(); j++) {
             auto input_copy = input;
-            cout << "Total: " << counter++ << " out of " << poss_cases << endl;
             if(input_copy[i][j] == '.') {
                 input_copy[i][j] = '#';
-                // print(input_copy);
                 if(loop_exists(input_copy)) {
-                    cout << "Total: " << total << ", i: " << i << ", j:" << j << endl;
                     total++;
                 }
             }
