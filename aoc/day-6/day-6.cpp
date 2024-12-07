@@ -100,10 +100,54 @@ void print(vector<string> input) {
     cout << endl;
 }
 
+void fill_up_directions(const Position &position, const vector<string> &input, vector<vector<set<Direction>>> &seen_directions) {
+
+    if(position.direction == UP || position.direction == DOWN) {
+        // Fill up
+        int v = position.v;
+        int h = position.h;
+
+        while(v >= 0 && v < seen_directions.size() && input[v][h] != '#') {
+            // cout << "Filling v: " << v << ", h: " << h << ", d: " << position.direction.name << endl;
+            seen_directions[v][h].insert(position.direction);
+            v++;
+        }
+
+        // Fill down
+        v = position.v;
+
+        while(v >= 0 && v < seen_directions.size() && input[v][h] != '#') {
+            // cout << "Filling v: " << v << ", h: " << h << ", d: " << position.direction.name << endl;
+            seen_directions[v][h].insert(position.direction);
+            v--;
+        }
+    } else {
+        // Fill left
+        int v = position.v;
+        int h = position.h;
+
+        while(h >= 0 && h < seen_directions[v].size() && input[v][h] != '#') {
+            // cout << "Filling v: " << v << ", h: " << h << ", d: " << position.direction.name << endl;
+            seen_directions[v][h].insert(position.direction);
+            h--;
+        }
+
+        // Fill right
+        h = position.h;
+
+        while(h >= 0 && h < seen_directions[v].size() && input[v][h] != '#') {
+            // cout << "Filling v: " << v << ", h: " << h << ", d: " << position.direction.name << endl;
+            seen_directions[v][h].insert(position.direction);
+            h++;
+        }
+    }
+
+}
+
 void part_two() {
 
     const auto io = IO();
-    auto input = io.readFile("./io/day-6/test-input.txt");
+    auto input = io.readFile("./io/day-6/real-input.txt");
 
     auto total = 0;
 
@@ -138,7 +182,26 @@ void part_two() {
         } else {
 
             // If we're on the block, make a note of the direction we were going in.
-            seen_directions[position.v][position.h].insert(position.direction);
+            // seen_directions[position.v][position.h].insert(position.direction);
+
+            fill_up_directions(position, input, seen_directions);
+
+            set<Direction> poss_next_directions = seen_directions[position.v][position.h];
+
+            // If we're on a square where by turning right we can mimic an already
+            // visited square, we can create a loop.
+            if(poss_next_directions.find(*position.direction.next) != poss_next_directions.end()) {
+                // cout << "----------------------------" << endl;
+                // cout << "Next directions: ";
+                // for (Direction const& direction : poss_next_directions) {
+                //     cout << direction.name << ' ';
+                // }
+                // cout << endl;
+                // cout << "v: " << position.v <<  ", h: " << position.h << ", d:" << position.direction.name << ", n: " << position.direction.next->name  << endl;
+                // cout << "----------------------------" << endl;
+                // cout << endl;
+                total++;
+            }
 
             // If current block is not visited
             if(input[position.v][position.h] == '.') {
@@ -149,22 +212,22 @@ void part_two() {
             // If we have been to this square then check if our next direction is in the list 
             // of previously visited directions.
             } else {
-                set<Direction> poss_next_directions = seen_directions[position.v][position.h];
+                // set<Direction> poss_next_directions = seen_directions[position.v][position.h];
 
                 // If we're on a square where by turning right we can mimic an already
                 // visited square, we can create a loop.
-                if(poss_next_directions.find(*position.direction.next) != poss_next_directions.end()) {
-                    cout << "----------------------------" << endl;
-                    cout << "Next directions: ";
-                    for (Direction const& direction : poss_next_directions) {
-                        cout << direction.name << ' ';
-                    }
-                    cout << endl;
-                    cout << "v: " << position.v <<  ", h: " << position.h << ", d:" << position.direction.name << ", n: " << position.direction.next->name  << endl;
-                    cout << "----------------------------" << endl;
-                    cout << endl;
-                    total++;
-                }
+                // if(poss_next_directions.find(*position.direction.next) != poss_next_directions.end()) {
+                //     // cout << "----------------------------" << endl;
+                //     // cout << "Next directions: ";
+                //     // for (Direction const& direction : poss_next_directions) {
+                //     //     cout << direction.name << ' ';
+                //     // }
+                //     // cout << endl;
+                //     // cout << "v: " << position.v <<  ", h: " << position.h << ", d:" << position.direction.name << ", n: " << position.direction.next->name  << endl;
+                //     // cout << "----------------------------" << endl;
+                //     // cout << endl;
+                //     total++;
+                // }
             }
             // Move on
             position.v = new_v;
@@ -175,6 +238,11 @@ void part_two() {
     cout << "Part two: " << total << endl;
 
 }
+
+// Expected:
+//      6, 4
+//      6, 6
+//      7, 6
 
 int main() {
 
