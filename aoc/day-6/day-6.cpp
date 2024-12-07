@@ -144,6 +144,14 @@ void fill_up_directions(const Position &position, const vector<string> &input, v
 
 }
 
+int try_blocks(const vector<string> &input, const Position &position, const set<Direction> &poss_next_directions) {
+
+    // We can put a block if...
+    // (block_v >= 0 && block_v < input.size() && block_h >= 0 && block_h < input[0].size() && )
+    int block_v;
+
+}
+
 void part_two() {
 
     const auto io = IO();
@@ -184,11 +192,15 @@ void part_two() {
 
             set<Direction> poss_next_directions = seen_directions[position.v][position.h];
 
+            // Try putting blocks in every non-blocked square, and see
+            // if it gets us onto a good path.
+            total += try_blocks(input, position, poss_next_directions);
+
             // If we're on a square where by turning right we can get onto a path where
             // we can get into a loop, go for it
-            if(poss_next_directions.find(*position.direction.next) != poss_next_directions.end()) {
-                total++;
-            }
+            // if(poss_next_directions.find(*position.direction.next) != poss_next_directions.end()) {
+            //     total++;
+            // }
 
             // If current block is not visited, mark this block as used
             if(input[position.v][position.h] == '.') {
