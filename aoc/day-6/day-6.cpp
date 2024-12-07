@@ -171,8 +171,6 @@ void part_two() {
     // While in grid
     while(position.v > 0 && position.v < input.size() && position.h > 0 && position.h < input[0].size()) {
         
-        // print(input);
-
         int new_v = position.v + position.direction.v;
         int new_h = position.h + position.direction.h;
 
@@ -182,53 +180,21 @@ void part_two() {
         } else {
 
             // If we're on the block, make a note of the direction we were going in.
-            // seen_directions[position.v][position.h].insert(position.direction);
-
             fill_up_directions(position, input, seen_directions);
 
             set<Direction> poss_next_directions = seen_directions[position.v][position.h];
 
-            // If we're on a square where by turning right we can mimic an already
-            // visited square, we can create a loop.
+            // If we're on a square where by turning right we can get onto a path where
+            // we can get into a loop, go for it
             if(poss_next_directions.find(*position.direction.next) != poss_next_directions.end()) {
-                // cout << "----------------------------" << endl;
-                // cout << "Next directions: ";
-                // for (Direction const& direction : poss_next_directions) {
-                //     cout << direction.name << ' ';
-                // }
-                // cout << endl;
-                // cout << "v: " << position.v <<  ", h: " << position.h << ", d:" << position.direction.name << ", n: " << position.direction.next->name  << endl;
-                // cout << "----------------------------" << endl;
-                // cout << endl;
                 total++;
             }
 
-            // If current block is not visited
+            // If current block is not visited, mark this block as used
             if(input[position.v][position.h] == '.') {
-
-                // Mark this block as used
                 input[position.v][position.h] = 'X';
+            } 
 
-            // If we have been to this square then check if our next direction is in the list 
-            // of previously visited directions.
-            } else {
-                // set<Direction> poss_next_directions = seen_directions[position.v][position.h];
-
-                // If we're on a square where by turning right we can mimic an already
-                // visited square, we can create a loop.
-                // if(poss_next_directions.find(*position.direction.next) != poss_next_directions.end()) {
-                //     // cout << "----------------------------" << endl;
-                //     // cout << "Next directions: ";
-                //     // for (Direction const& direction : poss_next_directions) {
-                //     //     cout << direction.name << ' ';
-                //     // }
-                //     // cout << endl;
-                //     // cout << "v: " << position.v <<  ", h: " << position.h << ", d:" << position.direction.name << ", n: " << position.direction.next->name  << endl;
-                //     // cout << "----------------------------" << endl;
-                //     // cout << endl;
-                //     total++;
-                // }
-            }
             // Move on
             position.v = new_v;
             position.h = new_h;
