@@ -8,46 +8,21 @@
 
 using namespace std;
 
-// Create a map:
-//  Key - Number 
-//  Value - A set of all numbers that can only come after a number
-
-// From the end, move backwards
-
 struct ParsedInput {
     map<int, set<int>> key_to_afters_map;
     vector<vector<int>> page_orders;
 };
 
-void printMap(map<int, set<int>> key_to_afters_map) {
-    for(auto it = key_to_afters_map.cbegin(); it != key_to_afters_map.cend(); ++it) {
-        cout << to_string(it->first) << ": ";
-        for(auto in_it = it->second.cbegin(); in_it != it->second.cend(); ++in_it) {
-            cout << to_string(*in_it) << " ";
-        }
-        cout << endl;
-    }
-}
-
-void printPageOrders(vector<vector<int>> page_orders) {
-    for(int i = 0; i < page_orders.size(); i++) {
-        for(int j = 0; j < page_orders[i].size(); j++) {
-            cout << to_string(page_orders[i][j]) << " ";
-        }
-        cout << endl;
-    }
-}
-
-ParsedInput parseInput(vector<string> input) {
+ParsedInput parseInput(const vector<string> &input) {
 
     map<int, set<int>> key_to_afters_map;
     int pos = 0;
 
     while(input[pos].find('|') != std::string::npos) {
-        auto line = input[pos];
+        const auto line = input[pos];
 
-        auto left = stoi(line.substr(0, line.find('|')));
-        auto right = stoi(line.substr(line.find('|') + 1));
+        const auto left = stoi(line.substr(0, line.find('|')));
+        const auto right = stoi(line.substr(line.find('|') + 1));
 
         if(key_to_afters_map.count(left) > 0) {
             key_to_afters_map[left].insert(right);
@@ -81,12 +56,10 @@ ParsedInput parseInput(vector<string> input) {
     };
 }
 
-bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line) {
-
-// /    bool result = true;
+bool isLineValid(const map<int, set<int>> &key_to_afters_map, const vector<int> &line) {
 
     for(int i = line.size() - 1; i > 0; i--) {
-        set<int> banned_nums = key_to_afters_map[line[i]];
+        const set<int> banned_nums = key_to_afters_map.at(line[i]);
         for(int j = 0; j < i; j++) {
             if(banned_nums.count(line[j]) > 0) {
                 return false;
@@ -97,13 +70,9 @@ bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line) {
     return true;
 }
 
-// bool isLineValid(map<int, set<int>> key_to_afters_map, vector<int> line) {
-//     isLineValid(key_to_afters_map, line, false);
-// }
+void partOne(const ParsedInput &parsed_input) {
 
-void partOne(ParsedInput parsed_input) {
-
-    int total = 0;
+    auto total = 0;
 
     for(auto line: parsed_input.page_orders) {
         if(isLineValid(parsed_input.key_to_afters_map, line)) {
@@ -115,29 +84,7 @@ void partOne(ParsedInput parsed_input) {
 
 }
 
-void printLine(vector<int> line) {
-    cout << "Line: ";
-    for(auto i : line) {
-        cout << i << " ";
-    }
-    cout << endl;
-}
-
-void printMap(map<int, int> map) {
-    for(auto it = map.cbegin(); it != map.cend(); ++it) {
-        cout << to_string(it->first) << ": " << to_string(it->second) << endl;
-    }
-}
-
-void printSet(set<int> set) {
-    cout << "Set ";
-    for(auto it = set.cbegin(); it != set.cend(); ++it) {
-        cout << to_string(*it) << " ";
-    }
-    cout << endl;
-}
-
-vector<int> orderLine(map<int, set<int>> key_to_afters_map, vector<int> line) {
+vector<int> orderLine(const map<int, set<int>> &key_to_afters_map, const vector<int> &line) {
 
     vector<int> reordered_line = line;
 
@@ -147,14 +94,13 @@ vector<int> orderLine(map<int, set<int>> key_to_afters_map, vector<int> line) {
 
         if(key_to_afters_map.find(item) != key_to_afters_map.end()) {
 
-            set<int> afters = key_to_afters_map[item];
-            int item_idx = find(reordered_line.begin(), reordered_line.end(), item) - reordered_line.begin();
+            auto afters = key_to_afters_map.at(item);
+            auto item_idx = find(reordered_line.begin(), reordered_line.end(), item) - reordered_line.begin();
 
             for(int i = 0; i < item_idx; i++) {
                 if(afters.find(reordered_line[i]) != afters.end()) {
                     reordered_line.insert(reordered_line.begin() + i, item);
                     reordered_line.erase(reordered_line.begin() + item_idx + 1);
-                    cout << endl;
                     break;
                 }
             }
@@ -167,16 +113,14 @@ vector<int> orderLine(map<int, set<int>> key_to_afters_map, vector<int> line) {
 
 }
 
-void partTwo(ParsedInput parsed_input) {
+void partTwo(const ParsedInput &parsed_input) {
 
     int total = 0;
 
     for(auto line: parsed_input.page_orders) {
         if(!isLineValid(parsed_input.key_to_afters_map, line)) {
-            auto ordered_line = orderLine(parsed_input.key_to_afters_map, line);
+            const auto ordered_line = orderLine(parsed_input.key_to_afters_map, line);
             total += ordered_line[ordered_line.size() / 2];
-        } else {
-            cout << "Valid line";
         }
     }
 
@@ -196,5 +140,3 @@ int main() {
 
     return 0;
 }
-
-// 61 96 89 91 33
