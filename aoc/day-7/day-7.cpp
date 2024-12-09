@@ -82,12 +82,34 @@ void part_one() {
 
 }
 
+void recursively_solve_2(long rt, int pos, const vector<long> &numbers, set<long> &totals) {
+    if(pos >= numbers.size()) {
+        totals.insert(rt);
+    } else {
+        recursively_solve_2(stol(to_string(rt) + to_string(numbers[pos])), pos + 1, numbers, totals);
+        recursively_solve_2(rt + numbers[pos], pos + 1, numbers, totals);
+        recursively_solve_2(rt * numbers[pos], pos + 1, numbers, totals);
+    }
+}
+
 void part_two() {
 
     const auto io = IO();
-    auto input = io.readFile("./io/day-7/test-input.txt");
+    auto input = io.readFile("./io/day-7/real-input.txt");
 
-    auto total = 0;
+    long total = 0;
+
+    auto entries = parse_input(input);
+    
+    auto counter = 0;
+
+    for(auto entry: entries) {
+        set<long> totals;
+        recursively_solve_2(entry.numbers[0], 1, entry.numbers, totals);
+        if(totals.find(entry.total) != totals.end()) {
+            total+= entry.total;
+        }
+    }
 
     cout << "Part two: " << total << endl;
 
