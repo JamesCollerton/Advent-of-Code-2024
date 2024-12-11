@@ -11,8 +11,6 @@ using namespace std;
 vector<long> parse_input(const string &input) {
     vector<long> result;
     for(int i = 0; i < input.size(); i++) {
-        // cout << input[i] << endl;
-        // cout << input[i] - '0' << endl;
         result.push_back(input[i] - '0');
     }
     return result;
@@ -60,26 +58,11 @@ void part_one() {
         }
     }
 
-    // cout << "Free: " << free << endl;
-    // cout << "To move: " << to_move << endl;
-
     for(int i = 0; i < disk.size(); i++) {
         if(disk[i] != -1) {
             total += i * disk[i];
         }
-        // cout << disk[i];
     }
-    // cout << endl;
-
-    // for(int i = 0; i < input_nums.size(); i++) {
-    //     cout << input_nums[i];
-    // }
-    // cout << endl;
-
-    // for(int i = 0; i < disk.size(); i++) {
-    //     cout << disk[i] << " ";
-    // }
-    // cout << endl;
 
     cout << "Part one: " << total << endl;
 
@@ -88,7 +71,7 @@ void part_one() {
 void part_two() {
 
     const auto io = IO();
-    auto input = io.readFile("./io/day-9/test-input.txt")[0];
+    auto input = io.readFile("./io/day-9/real-input.txt")[0];
     auto input_nums = parse_input(input);
 
     long total = 0;
@@ -113,39 +96,23 @@ void part_two() {
 
     long to_move = disk.size() - 1;
 
-    cout << endl;
-    
-    for(int i = 0; i < disk.size(); i++) {
-        cout << disk[i] << " ";
-    }
-
-    cout << endl;
-
     set<long> seen;
 
     // While we can move any block
     while(to_move > 0) {
 
         // Find start of first disk block from end
-        while(disk[to_move] == -1 && to_move > 0) {
+        while(disk[to_move] == -1 && to_move > 0 && seen.find(disk[to_move]) != seen.end()) {
             to_move--;
         }
 
         // Measure disk block
-        long file_counter = 0;
+        long file_size = 0;
         long file_type = disk[to_move];
-
-        string file_contents = "";
-        while(disk[to_move - file_counter] == file_type && (to_move - file_counter) >= 0) {
-            
-            // Create a string of all the digits
-            file_contents += to_string(disk[to_move - file_counter]);
-            file_counter++;
+        seen.insert(file_type);
+        while(disk[to_move - file_size] == file_type && (to_move - file_size) >= 0) {
+            file_size++;
         }
-        long file_size = file_contents.size();
-
-        // cout << "File contents " << file_contents << endl;
-        // cout << "Size of block detected to be: " << file_size << endl;
 
         // Find free blocks until one is big enough
         long free = 0;
@@ -156,8 +123,6 @@ void part_two() {
                 free++;
             }
 
-            // cout << "Start of free space detected at: " << free << endl;
-
             if(free < to_move) {
                 
                 // Measure free block
@@ -166,22 +131,17 @@ void part_two() {
                     free_size++;
                 }
 
-                // cout << "Size of free space detected to be: " << free_size << endl;
-
                 // If there is enough space
                 if(free_size >= file_size) {
                     long counter = 0;
 
-                    // cout << "Free space greater than file size" << endl;
-
                     // Move this into the free space
                     long file_type = disk[to_move];
-                    for(int i = 0; i < file_contents.size(); i++) {
-                        // disk[free + i] = file_contents[i] - '0';
+                    for(int i = 0; i < file_size; i++) {
                         disk[free + i] = file_type;
                     }
 
-                    for(int i = 0; i < file_counter; i++) {
+                    for(int i = 0; i < file_size; i++) {
                         disk[to_move - i] = -1;
                     }
 
@@ -192,29 +152,15 @@ void part_two() {
                 }
             }
         }
-        to_move = to_move - (file_counter);
+        to_move = to_move - (file_size);
 
-        // cout << endl;
-
-        // for(int i = 0; i < disk.size(); i++) {
-        //     cout << disk[i] << " ";
-        // }
-        // cout << endl;
-        // cout << endl;
     }
-
-    // cout << "Free: " << free << endl;
-    // cout << "To move: " << to_move << endl;
 
     for(int i = 0; i < disk.size(); i++) {
         if(disk[i] != -1) {
             total += i * disk[i];
         }
-        // cout << disk[i];
     }
-
-    // cout << endl;
-    // cout << endl;
 
     cout << "Part two: " << total << endl;
 
