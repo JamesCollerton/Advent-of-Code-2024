@@ -57,3 +57,8 @@ cc_binary(
     name = "day-12",
     srcs = glob(["day-12/*.cpp", "io/*.cpp", "io/*.h"])
 )
+
+cc_binary(
+    name = "day-13",
+    srcs = glob(["day-13/*.cpp", "io/*.cpp", "io/*.h"])
+)
