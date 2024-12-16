@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 #include <queue>
+#include <chrono>
+#include <thread>
 #include "../io/io.h"
 
 using namespace std;
@@ -113,14 +115,69 @@ void part_one() {
 
 }
 
+// Just program to display the output and look for a Christmas tree.
 void part_two() {
 
     const auto io = IO();
-    auto input = io.readFile("./io/day-13/real-input.txt");
+    auto input = io.readFile("./io/day-14/real-input.txt");
+    auto height = 103;
+    auto width = 101;
 
-    long long total = 0;
+    vector<Position> positions = parse_input(input);
 
-    cout << "Part two: " << total << endl;
+    for (int t = 0; t < 10000; t ++) {
+
+        vector<Coord> coords;
+        for(auto p: positions) {
+
+            // Count for negative case
+            long final_x;
+            long final_y;
+
+            long unadjusted_x = (p.location.x + t * p.velocity.x) % width;
+            long unadjusted_y = (p.location.y + t * p.velocity.y) % height;
+
+            if(unadjusted_x >= 0) { 
+                final_x = unadjusted_x;
+            } else {
+                final_x = (width) + (unadjusted_x);
+            }
+
+            if(unadjusted_y >= 0) {
+                final_y = unadjusted_y;
+            } else {
+                final_y = (height) + (unadjusted_y);
+            }
+
+            coords.push_back({.x = final_x, .y = final_y});
+        }
+
+        vector<vector<char>> grid;
+        for(int i = 0; i < height; i++) {
+            vector<char> row; 
+            for(int j = 0; j < width; j++) {
+                row.push_back(' ');
+            }
+            grid.push_back(row);
+        }
+
+        for(auto coord: coords) {
+            grid[height - 1 - coord.y][coord.x] = 'x';
+        }
+
+        for(int i = 0; i < height; i++) {
+            for(int j = 0; j < width; j++) {
+                cout << grid[i][j];
+            }
+            cout << endl;
+        }
+
+        cout << "t: " << t << endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        for(int i = 0; i < 150; i++) {
+            cout << endl;
+        }
+    };
 
 }
 
