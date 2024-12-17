@@ -71,6 +71,8 @@
         "set": "cpp",
         "stack": "cpp",
         "regex": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "queue": "cpp",
+        "thread": "cpp"
     }
 }
