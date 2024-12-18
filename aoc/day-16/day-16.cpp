@@ -118,7 +118,7 @@ void part_one() {
 void part_two() {
 
     const auto io = IO();
-    auto input = io.readFile("./io/day-16/test-input-1.txt");
+    auto input = io.readFile("./io/day-16/real-input.txt");
 
     vector<vector<long>> totals;
 
@@ -147,41 +147,14 @@ void part_two() {
 
         cout << "Running total " << state.running_total << endl;
 
-        bool seen_in_run = false;
-        for(int i = 0; i < state.coords.size(); i++) {
-            if(state.coords[i][0] == state.v && state.coords[i][1] == state.h) {
-                seen_in_run = true;
-            }
-        }
-
-        // auto curr_grid = input;
+        // bool seen_in_run = false;
         // for(int i = 0; i < state.coords.size(); i++) {
-        //     curr_grid[state.coords[i][0]][state.coords[i][1]] = 'X';
-        // }
-        // for(int i = 0; i < curr_grid.size(); i++) {
-        //     for(int j = 0; j < curr_grid[j].size(); j++) {
-        //         cout << curr_grid[i][j];
+        //     if(state.coords[i][0] == state.v && state.coords[i][1] == state.h) {
+        //         seen_in_run = true;
         //     }
-        //     cout << endl;
         // }
 
-        // for(int i = 0; i < 100; i++) {
-        //     cout << endl;
-        // }
-
-
-        // for(int i = 0; i < input.size(); i++) {
-        //     for(int j = 0; j < input[i].size(); j++) {
-        //         if(!seen[i][j]) {
-        //             cout << input[i][j];
-        //         } else {
-        //             cout << 'X';
-        //         }
-        //     }
-        //     cout << endl;
-        // }
-
-        if(state.v >= 0 && state.v < input.size() && state.h >= 0 && state.h < input[state.v].size() && input[state.v][state.h] != '#' && totals[state.v][state.h] >= state.running_total) {
+        if(state.v >= 0 && state.v < input.size() && state.h >= 0 && state.h < input[state.v].size() && input[state.v][state.h] != '#' && totals[state.v][state.h] >= state.running_total && state.running_total <= total) {
             if(input[state.v][state.h] == 'E') {
                 if(res_map.find(state.running_total) != res_map.end()) {
                     for(int i = 0; i < state.coords.size(); i++) {
@@ -195,16 +168,16 @@ void part_two() {
                 }
                 total = min(total, state.running_total);
             } else {
-                totals[state.v][state.h] = state.running_total;
+                // totals[state.v][state.h] = state.running_total;
                 auto coords = state.coords;
                 coords.push_back({state.v, state.h});
                 if(state.direction == NORTH) {
                     to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 1, .direction = NORTH, .coords = coords});
-                    to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 2001, .direction = SOUTH, .coords = coords});
+                    // to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 2001, .direction = SOUTH, .coords = coords});
                     to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 1001, .direction = EAST, .coords = coords});
                     to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 1001, .direction = WEST, .coords = coords});
                 } else if(state.direction == SOUTH) {
-                    to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 2001, .direction = NORTH, .coords = coords});
+                    // to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 2001, .direction = NORTH, .coords = coords});
                     to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 1, .direction = SOUTH, .coords = coords});
                     to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 1001, .direction = EAST, .coords = coords});
                     to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 1001, .direction = WEST, .coords = coords});
@@ -212,12 +185,12 @@ void part_two() {
                     to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 1001, .direction = NORTH, .coords = coords});
                     to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 1001, .direction = SOUTH, .coords = coords});
                     to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 1, .direction = EAST, .coords = coords});
-                    to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 2001, .direction = WEST, .coords = coords});
+                    // to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 2001, .direction = WEST, .coords = coords});
                 // West
                 } else {
                     to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 1001, .direction = NORTH, .coords = coords});
                     to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 1001, .direction = SOUTH, .coords = coords});
-                    to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 2001, .direction = EAST, .coords = coords});
+                    // to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 2001, .direction = EAST, .coords = coords});
                     to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 1, .direction = WEST, .coords = coords});
                 }
                 // totals[state.v][state.h] = state.running_total;
@@ -242,6 +215,7 @@ void part_two() {
     }
 
     cout << "Part two: " << squares + 1 << endl;
+    cout << "Part two: " << total << endl;
 
 }
 
