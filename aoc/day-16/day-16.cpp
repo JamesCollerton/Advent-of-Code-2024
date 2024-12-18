@@ -18,86 +18,96 @@ enum Direction {
     WEST
 };
 
-long part_one_total = LLONG_MAX;
-
-void recursively_find_total(const Direction &direction, const vector<string> &input, vector<vector<bool>> &seen, int v, int h, long running_total) {
-    
-    // for(int i = 0; i < input.size(); i++) {
-    //     for(int j = 0; j < input[i].size(); j++) {
-    //         if(!seen[i][j]) {
-    //             cout << input[i][j];
-    //         } else {
-    //             cout << 'X';
-    //         }
-    //     }
-    //     cout << endl;
-    // }
-
-    if(v >= 0 && v < input.size() && h >= 0 && h < input[v].size() && input[v][h] != '#' && !seen[v][h]) {
-        if(input[v][h] == 'E') {
-            part_one_total = min(part_one_total, running_total);
-            cout << part_one_total << endl;
-        } else {
-            seen[v][h] = true;
-            if(direction == NORTH) {
-                recursively_find_total(NORTH, input, seen, v - 1, h, running_total + 1);
-                recursively_find_total(SOUTH, input, seen, v + 1, h, running_total + 2001);
-                recursively_find_total(EAST, input, seen, v, h + 1, running_total + 1001);
-                recursively_find_total(WEST, input, seen, v, h - 1, running_total + 1001);
-            } else if(direction == SOUTH) {
-                recursively_find_total(NORTH, input, seen, v - 1, h, running_total + 2001);
-                recursively_find_total(SOUTH, input, seen, v + 1, h, running_total + 1);
-                recursively_find_total(EAST, input, seen, v, h + 1, running_total + 1001);
-                recursively_find_total(WEST, input, seen, v, h - 1, running_total + 1001);
-            } else if(direction == EAST) {
-                recursively_find_total(NORTH, input, seen, v - 1, h, running_total + 1001);
-                recursively_find_total(SOUTH, input, seen, v + 1, h, running_total + 1001);
-                recursively_find_total(EAST, input, seen, v, h + 1, running_total + 1);
-                recursively_find_total(WEST, input, seen, v, h - 1, running_total + 2001);
-            // West
-            } else {
-                recursively_find_total(NORTH, input, seen, v - 1, h, running_total + 1001);
-                recursively_find_total(SOUTH, input, seen, v + 1, h, running_total + 1001);
-                recursively_find_total(EAST, input, seen, v, h + 1, running_total + 2001);
-                recursively_find_total(WEST, input, seen, v, h - 1, running_total + 1);
-            }
-            seen[v][h] = false;
-        }
+struct State {
+    int v;
+    int h;
+    long running_total;
+    Direction direction;
+    bool operator<(const State& rhs) const {
+        return running_total > rhs.running_total;
     }
-}
+};
 
 void part_one() {
 
     const auto io = IO();
     auto input = io.readFile("./io/day-16/real-input.txt");
 
-    vector<vector<bool>> seen;
+    vector<vector<long>> totals;
 
     // Find start and initialise array of seen spaces
     int v, h;
     for(int i = 0; i < input.size(); i++) {
-        vector<bool> row;
+        vector<long> row;
         for(int j = 0; j < input[i].size(); j++) {
-            row.push_back(false);
+            row.push_back(LLONG_MAX);
             if(input[i][j] == 'S') {
                 v = i;
                 h = j;   
             }
         }
-        seen.push_back(row);
+        totals.push_back(row);
     }
 
-    recursively_find_total(EAST, input, seen, v, h, 0);
+    long total = LLONG_MAX;
+    priority_queue<State> to_visit;
+    to_visit.push(State{.v = v, .h = h, .running_total = 0, .direction = EAST});
 
-    cout << "Part one: " << part_one_total << endl;
+    while(!to_visit.empty()) {
+        auto state = to_visit.top();
+        to_visit.pop();
+
+        // cout << state.running_total << endl;
+        // cout << totals[state.v][state.h] << endl;
+        // cout << to_visit.size() << endl;
+
+        // for(int i = 0; i < input.size(); i++) {
+        //     for(int j = 0; j < input[i].size(); j++) {
+        //         if(!seen[i][j]) {
+        //             cout << input[i][j];
+        //         } else {
+        //             cout << 'X';
+        //         }
+        //     }
+        //     cout << endl;
+        // }
+
+        // cout << "v: " << state.v << ", h: " << state.h << endl;
+
+        if(state.v >= 0 && state.v < input.size() && state.h >= 0 && state.h < input[state.v].size() && input[state.v][state.h] != '#' && totals[state.v][state.h] > state.running_total) {
+            if(input[state.v][state.h] == 'E') {
+                total = min(total, state.running_total);
+            } else {
+                totals[state.v][state.h] = state.running_total;
+                if(state.direction == NORTH) {
+                    to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 1, .direction = NORTH});
+                    to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 2001, .direction = SOUTH});
+                    to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 1001, .direction = EAST});
+                    to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 1001, .direction = WEST});
+                } else if(state.direction == SOUTH) {
+                    to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 2001, .direction = NORTH});
+                    to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 1, .direction = SOUTH});
+                    to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 1001, .direction = EAST});
+                    to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 1001, .direction = WEST});
+                } else if(state.direction == EAST) {
+                    to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 1001, .direction = NORTH});
+                    to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 1001, .direction = SOUTH});
+                    to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 1, .direction = EAST});
+                    to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 2001, .direction = WEST});
+                // West
+                } else {
+                    to_visit.push({.v = state.v - 1, .h = state.h, .running_total = state.running_total + 1001, .direction = NORTH});
+                    to_visit.push({.v = state.v + 1, .h = state.h, .running_total = state.running_total + 1001, .direction = SOUTH});
+                    to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 2001, .direction = EAST});
+                    to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 1, .direction = WEST});
+                }
+            }
+        }
+    }
+
+    cout << "Part one: " << total << endl;
 
 }
-
-struct State {
-    int v;
-    int h;
-    char c;
-};
 
 void part_two() {
 
