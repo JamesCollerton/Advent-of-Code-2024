@@ -37,7 +37,6 @@ void part_one() {
 
     vector<vector<long>> totals;
 
-    // Find start and initialise array of seen spaces
     int v, h;
     for(int i = 0; i < input.size(); i++) {
         vector<long> row;
@@ -58,27 +57,6 @@ void part_one() {
     while(!to_visit.empty()) {
         auto state = to_visit.top();
         to_visit.pop();
-
-        cout << to_visit.size() << endl;
-        cout << total << endl;
-        cout << "Running total " << state.running_total << endl;
-
-        // cout << state.running_total << endl;
-        // cout << totals[state.v][state.h] << endl;
-        // cout << to_visit.size() << endl;
-
-        // for(int i = 0; i < input.size(); i++) {
-        //     for(int j = 0; j < input[i].size(); j++) {
-        //         if(!seen[i][j]) {
-        //             cout << input[i][j];
-        //         } else {
-        //             cout << 'X';
-        //         }
-        //     }
-        //     cout << endl;
-        // }
-
-        // cout << "v: " << state.v << ", h: " << state.h << endl;
 
         if(state.v >= 0 && state.v < input.size() && state.h >= 0 && state.h < input[state.v].size() && input[state.v][state.h] != '#' && totals[state.v][state.h] > state.running_total) {
             if(input[state.v][state.h] == 'E') {
@@ -145,15 +123,6 @@ void part_two() {
         auto state = to_visit.top();
         to_visit.pop();
 
-        cout << "Running total " << state.running_total << endl;
-
-        // bool seen_in_run = false;
-        // for(int i = 0; i < state.coords.size(); i++) {
-        //     if(state.coords[i][0] == state.v && state.coords[i][1] == state.h) {
-        //         seen_in_run = true;
-        //     }
-        // }
-
         if(state.v >= 0 && state.v < input.size() && state.h >= 0 && state.h < input[state.v].size() && input[state.v][state.h] != '#' && totals[state.v][state.h] >= state.running_total && state.running_total <= total) {
             if(input[state.v][state.h] == 'E') {
                 if(res_map.find(state.running_total) != res_map.end()) {
@@ -193,7 +162,6 @@ void part_two() {
                     // to_visit.push({.v = state.v, .h = state.h + 1, .running_total = state.running_total + 2001, .direction = EAST, .coords = coords});
                     to_visit.push({.v = state.v, .h = state.h - 1, .running_total = state.running_total + 1, .direction = WEST, .coords = coords});
                 }
-                // totals[state.v][state.h] = state.running_total;
             }
         }
     }
@@ -206,16 +174,13 @@ void part_two() {
 
     for(int i = 0; i < input.size(); i++) {
         for(int j = 0; j < input[i].size(); j++) {
-            cout << input[i][j];
             if(input[i][j] == 'O') {
                 squares++;
             }
         }
-        cout << endl;
     }
 
     cout << "Part two: " << squares + 1 << endl;
-    cout << "Part two: " << total << endl;
 
 }
 

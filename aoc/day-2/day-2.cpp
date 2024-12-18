@@ -6,7 +6,7 @@ using namespace std;
 
 typedef istream_iterator<string> streamiter;
 
-bool isReportSafe(std::string report) {
+bool isReportSafe(const std::string &report) {
 
     istringstream buffer(report);
     streamiter istream = istream_iterator<string>(buffer);
